@@ -28,7 +28,23 @@ jobs:
               run:  npm ci
             - name: run test
               run: npm test
+    build:
+        needs: test
+        runs-on: ubuntu-latest
+        steps:
+            - name: get code
+              uses: actions/checkout@v3
+            - name: install Node.js
+              uses: actions/setup-node@v3
+              with:
+                node-version: '20'
+            - name: install dependencies
+              run:  npm ci
+            - name: build project
+              run: npm run build
+
     deploy:
+        needs: build
         runs-on: ubuntu-latest
         steps:
             - name: get code
@@ -42,5 +58,4 @@ jobs:
             - name: build project
               run: npm run build
             - name: deploy
-              run: echo "deploying application"
-    
+              run: echo "deploying application" 
