@@ -43,19 +43,24 @@ jobs:
             - name: build project
               run: npm run build
 
+            - name: publish js files
+              id: publish
+              run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT
+            - name: Upload build artifacts
+              uses: actions/upload-artifact@v4    #it uses azure blob storage to store artifacts
+              with:
+                name: dist-files
+                path: dist             #uploading artifacts
+
     deploy:
         needs: build
         runs-on: ubuntu-latest
         steps:
-            - name: get code
-              uses: actions/checkout@v3
-            - name: install Node.js
-              uses: actions/setup-node@v3
+            - name: download artifacts
+              uses: actions/download-artifact@v4
               with:
-                node-version: '20'
-            - name: install dependencies
-              run:  npm ci
-            - name: build project
-              run: npm run build
+                name: dist-files
+            - name: output content
+              run: ls -la
             - name: deploy
               run: echo "deploying application" 
